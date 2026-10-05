@@ -1,0 +1,6 @@
+2026/10/05-18:02:25.068 6d90 Creating DB C:\Users\Admin\Repositories\automation-v1\.chrome-session\Default\WebStorage\3\IndexedDB\indexeddb.leveldb since it was missing.
+2026/10/05-18:02:25.074 6d90 Reusing MANIFEST C:\Users\Admin\Repositories\automation-v1\.chrome-session\Default\WebStorage\3\IndexedDB\indexeddb.leveldb/MANIFEST-000001
+2026/10/05-18:12:55.185 6d90 Level-0 table #5: started
+2026/10/05-18:12:55.186 6d90 Level-0 table #5: 16519 bytes OK
+2026/10/05-18:12:55.188 6d90 Delete type=0 #3
+2026/10/05-18:12:55.188 6d90 Manual compaction at level-0 from (begin) .. (end); will stop at (end)

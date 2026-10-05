@@ -1,0 +1,12 @@
+services:
+  bps-automation:
+    build: .
+    container_name: bps-automation-runner
+    environment:
+      - DOCKER=true
+      - HEADLESS=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ipc: host # prevents memory issues with Chromium in container

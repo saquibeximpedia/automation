@@ -12,7 +12,8 @@
     ENDPOINT_URL: "https://www.bps.go.id/en/exim",
     NEXT_ACTION_ID: "7fd94b4fd486e628393d87e2227fb54cffd6c6c4c1",
     SAVE_COMBINED_FILE: true,   // Generates a unified 'bps-combined-import-export-results.csv'
-    SAVE_INDIVIDUAL_FILES: true // Generates 'bps-export-results.csv' and 'bps-import-results.csv'
+    SAVE_INDIVIDUAL_FILES: true, // Generates 'bps-export-results.csv' and 'bps-import-results.csv'
+    MAX_ROWS_PER_FILE: 900000   // 9 lakh rows per CSV file
   };
 
   // ==========================================
@@ -156,7 +157,7 @@
     return str;
   };
 
-  const downloadCSV = (rows, filename) => {
+  const downloadCSV = (rows, filename, maxRows = CONFIG.MAX_ROWS_PER_FILE || 900000) => {
     if (!rows || rows.length === 0) {
       console.warn(`[Download] No data rows to save for ${filename}`);
       return;
@@ -174,36 +175,45 @@
       "Value (USD)"
     ];
 
-    const csvLines = [headers.join(",")];
+    const totalChunks = Math.ceil(rows.length / maxRows);
+    const dotIndex = filename.lastIndexOf(".");
+    const base = dotIndex !== -1 ? filename.slice(0, dotIndex) : filename;
+    const ext = dotIndex !== -1 ? filename.slice(dotIndex) : ".csv";
 
-    for (const row of rows) {
-      csvLines.push(
-        [
-          row.tradeType,
-          row.hsCode,
-          row.month,
-          row.year,
-          row.originCountry,
-          row.destinationCountry,
-          row.port,
-          row.netWeight,
-          row.value,
-        ]
-          .map(csvEscape)
-          .join(",")
-      );
+    for (let part = 0; part < totalChunks; part++) {
+      const chunkRows = rows.slice(part * maxRows, (part + 1) * maxRows);
+      const chunkFilename = totalChunks === 1 ? filename : `${base}_part${part + 1}${ext}`;
+
+      const csvLines = [headers.join(",")];
+      for (const row of chunkRows) {
+        csvLines.push(
+          [
+            row.tradeType,
+            row.hsCode,
+            row.month,
+            row.year,
+            row.originCountry,
+            row.destinationCountry,
+            row.port,
+            row.netWeight,
+            row.value,
+          ]
+            .map(csvEscape)
+            .join(",")
+        );
+      }
+
+      const csvContent = csvLines.join("\r\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = chunkFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-
-    const csvContent = csvLines.join("\r\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   // ==========================================
