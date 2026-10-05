@@ -1,0 +1,16 @@
+{
+  "name": "automation",
+  "version": "1.0.0",
+  "description": "Automated browser-based extractor for both **Import** and **Export** trade data from BPS Indonesia ([bps.go.id/en/exim](https://www.bps.go.id/en/exim)).",
+  "main": "test_fetch.js",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}
